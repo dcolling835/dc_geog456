@@ -16,18 +16,14 @@
         #mapid{ width: 1200px; height: 900px; } 
     </style>
     <script>  
-
-
     var map = L.map('mapid').setView([47.876562, -114.032974], 15); 
 
  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
 	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 }).addTo(map);
 
-
-    var flbsIcon = L.icon({    
+  var flbsIcon = L.icon({    
         iconUrl: 'https://flbs.umt.edu/media/o3aaasew/flbs_logo_mark_print_transparent_640.gif', 
-          
         iconSize: [50,50],
         popupAnchor: [0,0] 
         });
