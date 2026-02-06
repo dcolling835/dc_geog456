@@ -1,0 +1,70 @@
+<html>
+    <head>
+        <title>NC Gardens</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+        <script src="ncgardens.js"></script>
+    </head>
+    <body>
+    <div id="mapid"></div>
+    
+    <style>
+        #mapid { width: 1300px; height: 900px; } 
+    </style>
+    <script>  
+    var map = L.map('mapid').setView([35.5, -79.5], 7); 
+
+    var OpenStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+    }).addTo(map);
+
+    var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxZoom: 17,
+        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+    });
+
+    var gardenIcon = L.icon({    
+        iconUrl: 'https://www.freeiconspng.com/uploads/red-flower-icon-18.png', 
+        iconSize: [30,30],
+        popupAnchor: [0, -25] 
+    });
+
+
+    var gardens = L.geoJSON(ncGardens, {
+        pointToLayer: function(feature, latlng) {
+            return L.marker(latlng, {icon: gardenIcon});
+        },
+        onEachFeature: function(feature, layer) {
+            var props = feature.properties;
+            var customPopup = `
+                <div class="popup-content">
+                    <h3>${props.name}</h3>
+                    <p>Location: ${props.city}, ${props.county}</p>
+                </div>
+            `;
+            layer.bindPopup(customPopup);
+        }
+    }).addTo(map);
+
+    var baselayers = {
+        "OpenStreetMap": OpenStreetMap, 
+        "OpenTopoMap": OpenTopoMap
+    }; 
+
+    var overlayers = {
+        "NC Public Gardens": gardens
+    }; 
+
+    L.control.layers(baselayers, overlayers, {
+        position: 'topright', 
+        collapsed: false
+    }).addTo(map); 
+   
+    </script>
+    </body>
+</html>
