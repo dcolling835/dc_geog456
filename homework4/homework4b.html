@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+  font-family: Tahoma, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 10px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.high {
+  background-color: yellow;
+}
+.low {
+  background-color: lightblue;
+}
+</style>
+</head>
+<body>
+
+<h2 style="font-family: 'Verdana', sans-serif; color: #007acc;">Zebra Mussel Occurrences in Michigan by County</h2>
+<h4 style="font-family: 'Verdana', sans-serif; color: #3498db;" id="subtitle">Loading data...</h4>
+
+<table id="mytable">
+  <tr>
+    <th>County</th>
+    <th>First Recorded Year</th>
+    <th>Total Occurrences</th>
+  </tr>
+</table>
+
+<script src="MI_Invasives.js"></script>
+
+<script>
+
+
+  var countySummary = {};  
+
+  for (var i = 0; i < data.features.length; i++) {
+    var props  = data.features[i].properties;
+    var county = props["County"];
+    var year   = props["Year"];
+
+    
+    if (!countySummary[county]) {
+      countySummary[county] = { count: 0, firstYear: year };
+    }
+
+    
+    countySummary[county].count++;
+
+ 
+    if (year !== null && (countySummary[county].firstYear === null || year < countySummary[county].firstYear)) {
+      countySummary[county].firstYear = year;
+    }
+  }
+
+
+  var countyArray = [];
+  for (var name in countySummary) {
+    countyArray.push({
+      county:    name,
+      count:     countySummary[name].count,
+      firstYear: countySummary[name].firstYear
+    });
+  }
+
+ 
+  countyArray.sort(function(a, b) {
+    return a.county.localeCompare(b.county);
+  });
+
+
+
+  var totalOccurrences = 0;
+  for (var i = 0; i < countyArray.length; i++) {
+    totalOccurrences += countyArray[i].count;
+  }
+  var avgOccurrences = totalOccurrences / countyArray.length;
+
+
+  document.getElementById('subtitle').innerHTML =
+    'The average number of zebra mussel occurrences per county is ' +
+    Math.round(avgOccurrences * 10) / 10 +
+    '. Counties in <span style="background:yellow; padding:1px 5px;">yellow</span> are above average; ' +
+    'counties in <span style="background:lightblue; padding:1px 5px;">light blue</span> are at or below average.';
+
+
+ 
+  var x = document.getElementById('mytable');
+
+  for (var i = 0; i < countyArray.length; i++) {
+
+    var myNewRow   = document.createElement('tr');
+    var myNewCell1 = document.createElement('td');  
+    var myNewCell2 = document.createElement('td');  
+    var myNewCell3 = document.createElement('td');  
+
+    myNewCell1.innerHTML = countyArray[i].county;
+    myNewCell2.innerHTML = countyArray[i].firstYear !== null ? countyArray[i].firstYear : 'Unknown';
+    myNewCell3.innerHTML = countyArray[i].count;
+
+   
+    myNewCell3.className = getClassName(countyArray[i].count);
+
+    myNewRow.append(myNewCell1);
+    myNewRow.append(myNewCell2);
+    myNewRow.append(myNewCell3);
+    x.append(myNewRow);
+
+  }  
+
+
+
+  function getClassName(count) {
+    return count > avgOccurrences ? 'high' : 'low';
+  }
+
+  function getBackgroundColor(count) {
+    return count > avgOccurrences ? 'yellow' : 'lightblue';
+  }
+
+</script>
+
+</body>
+</html>
