@@ -79,7 +79,7 @@
         var year = parseInt(this.value);
         output.innerHTML = year;
         map.removeLayer(musselLayer);
-        musselLayer = L.geoJSON(data.features.filter(function(f) { return f.properties.Year <= year; }), {
+        musselLayer = L.geoJSON(datasorted.features.filter(function(f) { return f.properties.Year <= year; }), {
             pointToLayer: function(feature, latlng) {
                 return L.circleMarker(latlng, { radius: 6, fillColor: '#e63946', color: '#fff', weight: 1, fillOpacity: 0.8 });
             }
