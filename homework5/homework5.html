@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Michigan Zebra Mussel Spread</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+        integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+        integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+        crossorigin=""></script>
+    <script src="MI_Invasives_Sorted.js"></script>
+</head>
+
+<style>
+    #mapid { width: 900px; height: 500px; }
+
+    .slidecontainer { width: 100%; }
+
+    .slider {
+        -webkit-appearance: none;
+        width: 50%;
+        height: 25px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider:hover { opacity: 1; }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        background: #4CAF50;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        background: #4CAF50;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+
+<h1>Zebra Mussel Spread in Michigan</h1>
+<h2>Each red point is a recorded sighting of invasive zebra mussels</h2>
+<div class="slidecontainer">
+    <input type="range" min="1988" max="2023" value="1988" class="slider" id="myRange">
+    Year: <span id="demo"></span>
+</div>
+
+
+
+<div id="mapid"></div>
+
+<script>
+    var map = L.map('mapid').setView([44.5, -85.0], 6);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var musselLayer = L.geoJSON([], {
+        pointToLayer: function(feature, latlng) {
+            return L.circleMarker(latlng, { radius: 6, fillColor: '#e63946', color: '#fff', weight: 1, fillOpacity: 0.8 });
+        }
+    }).addTo(map);
+
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+
+    slider.oninput = function() {
+        var year = parseInt(this.value);
+        output.innerHTML = year;
+        map.removeLayer(musselLayer);
+        musselLayer = L.geoJSON(data.features.filter(function(f) { return f.properties.Year <= year; }), {
+            pointToLayer: function(feature, latlng) {
+                return L.circleMarker(latlng, { radius: 6, fillColor: '#e63946', color: '#fff', weight: 1, fillOpacity: 0.8 });
+            }
+        });
+        map.addLayer(musselLayer);
+    };
+
+    window.onload = function() {
+        slider.value = 1988;
+        slider.oninput();
+    };
+</script>
+
+</body>
+</html>
