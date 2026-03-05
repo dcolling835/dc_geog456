@@ -1,4 +1,4 @@
-var data = {
+var datasorted = {
    "type": "FeatureCollection",
    "features": [
   {
